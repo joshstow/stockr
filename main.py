@@ -71,4 +71,4 @@ def form_post():
 
 # Run Flask app
 if __name__ == '__main__':
-    app.run(debug=True) #, threaded=False
+    app.run(debug=True)
