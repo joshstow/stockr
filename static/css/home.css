@@ -1,0 +1,22 @@
+html {
+  scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  padding: 0px;
+  height: 100%;
+}
+
+#jumbo {
+  background: #f5f5f5;
+  border-radius: 0;
+}
+
+#heading {
+  font-size: 400%;
+}
+
+#subheading {
+  font-size: 150%;
+}

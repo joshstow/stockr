@@ -1,0 +1,32 @@
+body {
+  background-color: #fff;
+}
+
+.jumbotron {
+  border-radius: 0;
+}
+
+#hrLight {
+  border-color: #6c757d;
+}
+
+#headingLight {
+  color: #6c757d;
+}
+
+#pLight {
+  color: #6c757d;
+}
+
+#up {
+  color: #15db99;
+}
+
+#down {
+  color: #ed3e67;
+}
+
+#arrow {
+  max-width: 4%;
+  height: auto;
+}

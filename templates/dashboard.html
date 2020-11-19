@@ -1,0 +1,508 @@
+<head>
+  <title>Dashboard - Stockr</title>
+  <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/dashboard.css') }}">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@2.8.0"></script>
+</head>
+
+<body>
+  <nav class="navbar navbar-light bg-dark">
+    <h4 class="text-light">
+      Stockr
+      <small class="text-white-50">Dashboard</small>
+    </h4>
+  </nav>
+
+  <div class="jumbotron bg-secondary mb-4">
+    <h1 class="display-4 text-light pl-3">
+      Welcome to
+      <strong>Stockr</strong>
+    </h1>
+    <p class="lead text-light pl-3 mb-0">To get started, enter a stock ticker below, along with your desired training parameters, and wait for the machine-learning model to train</p>
+  </div>
+
+  <div class="container-fluid px-5 mx-0 py-2">
+    <h2>Begin predicting</h2>
+    <hr class="my-4">
+    <form method="POST">
+      <div class="form-row">
+        <div class="form-group col-md-2">
+          <label for="inputTicker">Ticker</label>
+          <input name="ticker" id="inputTicker" type="text" class="form-control" placeholder="Enter stock ticker">
+        </div>
+        <div class="form-group col-md-5">
+          <label for="inputTrainingTimesteps">Training timesteps</label>
+          <input name="trainingTimesteps" id="inputTrainingTimesteps" type="text" class="form-control" placeholder="Enter number of training timesteps">
+        </div>
+        <div class="form-group col-md-5">
+          <label for="inputFutureTimesteps">Future timesteps</label>
+          <input name="futureTimesteps" id="inputFutureTimesteps" type="text" class="form-control" placeholder="Enter number of future timesteps">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-4">
+          <label for="inputDate">Start date</label>
+          <input name="date" id="inputDate" type="date" class="form-control" placeholder="Enter start date">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="inputEpochs">Epochs</label>
+          <input name="epochs" id="inputEpochs" type="text" class="form-control" placeholder="Enter number of epochs">
+        </div>
+        <div class="form-group col-md-4">
+          <label for="inputBatchsize">Batch size</label>
+          <input name="batchsize" id="inputBatchsize" type="text" class="form-control" placeholder="Enter batch size">
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-3">
+          <label for="inputLayer1">Layer 1</label>
+          <input name="layer1" id="inputLayer1" type="text" class="form-control" placeholder="Enter number of units">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="inputLayer2">Layer 2</label>
+          <input name="layer2" id="inputLayer2" type="text" class="form-control" placeholder="Enter number of units">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="inputLayer3">Layer 3</label>
+          <input name="layer3" id="inputLayer3" type="text" class="form-control" placeholder="Enter number of units">
+        </div>
+        <div class="form-group col-md-3">
+          <label for="inputDropout">Dropout?</label>
+          <select name="dropout" id="inputDropout" class="form-control">
+            <option selected>True</option>
+            <option>False</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-row">
+        <div class="form-group col-md-4 mb-1">
+          <button type="submit" class="btn btn-block btn-primary">Train</button>
+        </div>
+        <div class="form-group col-md-8 mb-1">
+        </div>
+      </div>
+      <p class="text-secondary">Please note: The page will refresh once the model has finished training</p>
+    </form>
+  </div>
+
+  <div id="dataBlock" class="jumbotron bg-dark pt-4 px-5 mb-0">
+    <h2 class="text-light px-0 pt-2">Analysis of {{ ticker }}</h2>
+    <hr id="hrLight" class="my-4">
+    <div class="row px-3">
+      <div class="col-md-9 pl-0 pr-3">
+        <h4 id="headingLight"><strong>LIVE DATA</strong></h4>
+        <hr id="hrLight" class="mt-2 mb-3">
+        <div class="row">
+          <canvas id="adjCloseGraph" class="pr-2" width="800" height="350">
+        </div>
+        <div class="row">
+          <canvas id="volumeGraph" class="pr-2" width="800" height="350">
+        </div>
+        <h4 id="headingLight" class="pt-3"><strong>MODEL TEST</strong></h4>
+        <hr id="hrLight" class="mt-2 mb-3">
+        <div class="row">
+          <canvas id="modelTestGraph" class="pr-2" width="800" height="350"></canvas>
+        </div>
+      </div>
+      <div class="col-md-3 pr-0 pl-3">
+        <h4 id="headingLight">
+          <img id="arrow" src="static/images/{{ currentMovement }}.png"/>
+          <strong>TODAY</strong>
+        </h4>
+        <hr id="hrLight" class="mt-2 mb-3">
+        <h4 id="{{ currentMovement }}">
+          <strong>{{ currentPrice }}</strong>
+          {{ currentChange }} ({{ currentPChange }}%)
+        </h4>
+        <p id="pLight" class="pb-3">{{ currentVolume }} units</p>
+        <h4 id="headingLight">
+          <img id="arrow" src="static/images/{{ immediatePredictedMovement }}.png"/>
+          <strong>TOMORROW</strong>
+        </h4>
+        <hr id="hrLight" class="mt-2 mb-3">
+        <h4 id="{{ immediatePredictedMovement }}" class="pb-4">
+          <strong>{{ predictedPrice }}</strong>
+          {{ predictedChange }} ({{ predictedPChange }}%)
+        </h4>
+        <h4 id="headingLight">
+          <img id="arrow" src="static/images/{{ generalPredictedMovement }}.png"/>
+          <strong>GENERAL FORECAST</strong>
+        </h4>
+        <hr id="hrLight" class="mt-2 mb-3">
+        <h4>
+          <span id="headingLight">r = </span>
+          <span id="{{ generalPredictedMovement }}">{{ r_value }}</span>
+        </h4>
+        <h4>
+          <span id="headingLight">m = </span>
+          <span id="{{ generalPredictedMovement }}">{{ slope }}</span>
+        </h4>
+        <p id="pLight" class="pb-3">from regression calculated for next {{ n_pred }} days</p>
+        <h4 id="headingLight"><strong>MODEL SUMMARY</strong></h4>
+        <hr id="hrLight" class="mt-2 mb-2">
+        <div class="row">
+          <div class="col-md-5">
+            <p id="pLight"><strong>Layer (type)</strong></p>
+          </div>
+          <div class="col-md-4 px-0">
+            <p id="pLight"><strong>Output shape</strong></p>
+          </div>
+          <div class="col-md-3">
+            <p id="pLight"><strong>Param #</strong></p>
+          </div>
+        </div>
+        {% for line in summary %}
+        <hr id="hrLight" class="mb-2 mt-0">
+        <div class="row">
+          <div class="col-md-5">
+            <p id="pLight">{{ line[0] }}</p>
+          </div>
+          <div class="col-md-4 px-0">
+            <p id="pLight">{{ line[1] }}</p>
+          </div>
+          <div class="col-md-3">
+            <p id="pLight">{{ line[2] }}</p>
+          </div>
+        </div>
+        {% endfor %}
+        <h4 id="headingLight" class="pt-3"><strong>TRAIN LOSS</strong></h4>
+        <hr id="hrLight" class="mt-2 mb-3">
+        <div class="row">
+          <div class="col-md-12 px-2">
+            <canvas id="lossGraph" width="600" height="400">
+          </div>
+        </div>
+        <h4 id="headingLight" class="pt-3"><strong>INPUT PARAMETERS</strong></h4>
+        <hr id="hrLight" class="mt-2 mb-2">
+        <div class="row">
+          <div class="col-md-7">
+            <p id="pLight"><strong>Parameter</strong></p>
+          </div>
+          <div class="col-md-5 px-0">
+            <p id="pLight"><strong>Argument</strong></p>
+          </div>
+        </div>
+        {% for item in inputs %}
+        <hr id="hrLight" class="mb-2 mt-0">
+        <div class="row">
+          <div class="col-md-7">
+            <p id="pLight">{{ item[0 ]}}</p>
+          </div>
+          <div class="col-md-5 px-0">
+            <p id="pLight">{{ item[1] }}</p>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+  
+  <nav class="navbar navbar-light bg-light">
+    <p></p>
+    <p class="text-dark mb-0 py-2 pr-2">© Joshua Stow 2019</p>
+  </nav>
+
+  <script>
+    // Hide or show the div element "dataBlock" based on the "state" variable
+    document.getElementById('dataBlock').style.display = '{{ state }}';
+
+    // Set all charts to be responsive
+    Chart.defaults.global.responsive = true;
+
+    // Get chart canvas and store as variable
+    var ctx1 = document.getElementById('adjCloseGraph').getContext('2d');
+
+    // Create the chart using the chart canvas
+    var adjCloseGraph = new Chart(ctx1, {
+      type: 'line',
+      data: {
+        labels: [{% for time in currentTimes %}
+          '{{ time }}',
+          {% endfor %}],
+        datasets: [{
+          label: 'Adjusted Close / $',
+          fill: true,
+          lineTension: 0,
+          borderColor: 'rgb(0,123,255)',
+          borderJoinStyle: 'round',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 1,
+          pointRadius: 1,
+          pointHitRadius: 5,
+          data: [{% for value in adjClose %}
+            {{ value }},
+            {% endfor %}],
+          spanGaps: false
+        }]
+      },
+      options: {
+        legend: {
+          display: true,
+          labels: {
+            fontSize: 16,
+            fontColor: '#6c757d'
+          }
+        },
+        scales: {
+          xAxes: [{
+            ticks: {
+              display: true,
+              autoSkip: true,
+              maxTicksLimit: 10,
+              beginAtZero: true,
+              fontColor: '#6c757d'
+            },
+            scaleLabel: {
+              display: false
+            },
+            gridLines: {
+              color: '#6c757d',
+              lineWidth: 1
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              fontColor: '#6c757d'
+            },
+            scaleLabel: {
+              display: false
+            },
+            gridLines: {
+              color: '#6c757d',
+              lineWidth: 1
+            }
+          }]
+        },
+        hover: {
+          animationDuration: 0
+        }
+      }
+    });
+
+    // Get chart canvas and store as variable
+    var ctx2 = document.getElementById('volumeGraph').getContext('2d');
+
+    // Create the chart using the chart canvas
+    var volumeGraph = new Chart(ctx2, {
+      type: 'line',
+      data: {
+        labels: [{% for time in currentTimes %}
+          '{{ time }}',
+          {% endfor %}],
+        datasets: [{
+          label: 'Volume / Units',
+          fill: true,
+          lineTension: 0,
+          backgroundColor: 'rgb(248,180,37)',
+          borderColor: 'rgb(248,180,37)',
+          borderJoinStyle: 'round',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 1,
+          pointRadius: 1,
+          pointHitRadius: 5,
+          data: [{% for vol in volume %}
+            {{ vol }},
+            {% endfor %}],
+          spanGaps: false
+        }]
+      },
+      options: {
+        legend: {
+          display: true,
+          labels: {
+            fontSize: 16,
+            fontColor: '#6c757d'
+          }
+        },
+        scales: {
+          xAxes: [{
+            ticks: {
+              display: true,
+              autoSkip: true,
+              maxTicksLimit: 10,
+              beginAtZero: true,
+              fontColor: '#6c757d'
+            },
+            scaleLabel: {
+              display: false
+            },
+            gridLines: {
+              color: '#6c757d',
+              lineWidth: 1
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              fontColor: '#6c757d'
+            },
+            scaleLabel: {
+              display: false
+            },
+            gridLines: {
+              color: '#6c757d',
+              lineWidth: 1
+            }
+          }]
+        },
+        hover: {
+          animationDuration: 0
+        }
+      }
+    });
+
+    // Get chart canvas and store as variable
+    var ctx3 = document.getElementById('lossGraph').getContext('2d');
+
+    // Create the chart using the chart canvas
+    var lossGraph = new Chart(ctx3, {
+      type: 'line',
+      data: {
+        labels: [{% for unit in lossScale %}
+          {{ unit }},
+          {% endfor %}],
+        datasets: [{
+          fill: true,
+          lineTension: 0,
+          borderColor: 'rgb(128,97,239)',
+          borderJoinStyle: 'round',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 1,
+          pointRadius: 1,
+          pointHitRadius: 5,
+          data: [{% for value in loss %}
+            {{ value }},
+            {% endfor %}],
+          spanGaps: false
+        }]
+      },
+      options: {
+        legend: {
+          display: false
+        },
+        scales: {
+          xAxes: [{
+            ticks: {
+              display: true,
+              autoSkip: true,
+              maxTicksLimit: 10,
+              beginAtZero: true,
+              fontColor: '#6c757d'
+            },
+            scaleLabel: {
+              display: true,
+              labelString: 'Epoch',
+              fontColor: '#6c757d',
+              fontSize: 14
+            },
+            gridLines: {
+              color: '#6c757d',
+              lineWidth: 1
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              fontColor: '#6c757d'
+            },
+            scaleLabel: {
+              display: false
+            },
+            gridLines: {
+              color: '#6c757d',
+              lineWidth: 1
+            }
+          }]
+        },
+        hover: {
+          animationDuration: 0
+        }
+      }
+    });
+
+    // Get chart canvas and store as variable
+    var ctx4 = document.getElementById('modelTestGraph').getContext('2d');
+
+    // Create the chart using the chart canvas
+    var adjCloseGraph = new Chart(ctx4, {
+      type: 'line',
+      data: {
+        labels: [{% for time in testTimes %}
+          '{{ time }}',
+          {% endfor %}],
+        datasets: [{
+          label: 'Actual Adjusted Close',
+          fill: true,
+          lineTension: 0,
+          borderColor: 'rgb(0,123,255)',
+          borderJoinStyle: 'round',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 1,
+          pointRadius: 1,
+          pointHitRadius: 5,
+          data: [{% for value in actualTestData %}
+            {{ value }},
+            {% endfor %}],
+          spanGaps: false
+        }, {
+          label: 'Predicted Adjusted Close',
+          fill: true,
+          lineTension: 0,
+          borderColor: 'rgb(255,99,132)',
+          borderJoinStyle: 'round',
+          pointHoverBackgroundColor: '#fff',
+          pointHoverBorderColor: '#fff',
+          pointHoverBorderWidth: 1,
+          pointRadius: 1,
+          pointHitRadius: 5,
+          data: [{% for value in testTestData %}
+            {{ value }},
+            {% endfor %}],
+          spanGaps: false
+        }]
+      },
+      options: {
+        legend: {
+          display: true,
+          labels: {
+            fontSize: 16,
+            fontColor: '#6c757d'
+          }
+        },
+        scales: {
+          xAxes: [{
+            ticks: {
+              display: true,
+              autoSkip: true,
+              maxTicksLimit: 10,
+              beginAtZero: true,
+              fontColor: '#6c757d'
+            },
+            scaleLabel: {
+              display: false
+            },
+            gridLines: {
+              color: '#6c757d',
+              lineWidth: 1
+            }
+          }],
+          yAxes: [{
+            ticks: {
+              fontColor: '#6c757d'
+            },
+            scaleLabel: {
+              display: false
+            },
+            gridLines: {
+              color: '#6c757d',
+              lineWidth: 1
+            }
+          }]
+        }
+      }
+    });
+  </script>
+</body>

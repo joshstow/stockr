@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Stockr | Home</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/home.css') }}"
+  </head>
+  <body>
+    <div id="jumbo" class="jumbotron pt-3 pb-4">
+      <div class="container">
+        <h1 id="heading">Stockr</h1>
+        <p id="subheading">Forecasting Stock Prices With Machine Learning</p>
+        <a href="#about" class="btn btn-outline-dark" role="button">Learn more</a>
+      </div>
+    </div>
+    <div class="container pb-5">
+      <div class="row">
+        <div class="col-md-6 pb-3">
+          <div class="col-md-12 border rounded p-3">
+            <h5 class="text-center">Sign in</h5>
+            <hr class="my-3">
+            <form method="POST">
+              <div class="form-group">
+                <label>Email address</label>
+                <input type="email" class="form-control" name="emailInput" required>
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" name="passwordInput" required>
+              </div>
+              <!--<button type="submit" class="btn btn-primary btn-block">Login</button>-->
+              <a href="" class="btn btn-primary btn-block" role="button">Login</a>
+            </form>
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="col-md-12 border rounded p-3">
+            <h5 class="text-center">Create account</h5>
+            <hr class="my-3">
+            <form method="POST">
+              <div class="form-row pb-3">
+                <div class="col">
+                  <label>First name</label>
+                  <input type="text" class="form-control" name="signup-fnameInput" required>
+                </div>
+                <div class="col">
+                  <label>Last name</label>
+                  <input type="text" class="form-control" name="signup-lnameInput" required>
+                </div>
+              </div>
+              <div class="form-group">
+                <label>Email address</label>
+                <input type="email" class="form-control" name="signup-emailInput" required>
+              </div>
+              <div class="form-group">
+                <label>Password</label>
+                <input type="password" class="form-control" name="signup-passwordInputA" required>
+              </div>
+              <div class="form-group">
+                <label>Confirm password</label>
+                <input type="password" class="form-control" name="signup-passwordInputB" required>
+              </div>
+              <button type="submit" class="btn btn-primary btn-block">Sign up</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="about" class="pb-2">
+      <div id="jumbo" class="jumbotron">
+        <div class="container">
+          <h1>About Stockr</h1>
+          <p class="lead">
+            Stockr is an advanced web application which allows for the tracking
+            and prediction of shares on the stock market. The ability for an
+            individual to accurately predict the future changes in the price of
+            a stock proves very advantageous, as it allows for a higher return
+            of investment, and significantly reduces the risk associated with
+            trading.
+          </p>
+          <p class="lead">
+            Trading requires a quick response to changes; with access to
+            forecasted prices, shares can be bought or sold in anticipation of
+            a fluctuation before other competitors are able to do so. The aim
+            of all this being to alleviate some of the guess work which is
+            required to work in this sector.
+          </p>
+          <p class="lead">
+            Through industry leading machine learning algorithms, Stockr offers
+            accurate next day forecasts which allow brokers to make educated
+            decisions and when to buy and sell, enabling them to thrive on the
+            stock exchange.
+          </p>
+        </div>
+      </div>
+      <div class="pl-4 pt-0 pb-1 text-muted">
+        <p>© Josh Stow 2019</p>
+      </div>
+  </body>
+</html>
